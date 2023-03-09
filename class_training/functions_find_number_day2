@@ -1,0 +1,72 @@
+/*Write a program where the computer chooses a number between 1-100.
+The user needs to guess the number.
+The user gets 7 attempts.
+At each attempt the user is told one of three things:
+- If the number the user guessed is the same as the computer choose: You won!
+- If the number the user guessed is bigger than what the computer choose: Try a bigger number
+- If the number the user guessed is smaller than what the computer choose: Try a smaller number
+After 7 failed attempts the program tells the user: You Lose :(
+Use functions to make the program as DRY as possible (without loops).
+*/
+
+#include <iostream>
+#include <random> 
+#include <string>
+
+int GetProgramNum(const int a_MAX_NUMBER)
+{
+    std::random_device rand{};
+    return rand() % a_MAX_NUMBER + 1;
+}
+
+int GetUserChoice(const int a_attempts)
+{
+    std::cout << "you have " << a_attempts << " attempts left\n";
+    std::string untrust_userGuess{};
+    std::getline(std::cin,untrust_userGuess);
+    const int userGuess = std::stoi(untrust_userGuess);
+    return userGuess;
+}
+
+void CheckGuess(const int a_usrChoice, const int a_progChoice)
+{
+    if (a_progChoice == a_usrChoice)
+    {
+        std::cout << "You won!\n";
+        exit(0); // (= successful program termination)
+    }
+    else if (a_progChoice < a_usrChoice)
+    {
+        std::cout << "Try a smaller number\n";
+    }
+    else if (a_progChoice > a_usrChoice)
+    {
+        std::cout << "Try a bigger number\n";
+    }
+}
+
+int Game(int a_attempts, const int a_PROGRAM_GUESS)
+{
+    if (a_attempts == 0)
+    {
+        return 0;
+    }
+
+    const int userChoice{GetUserChoice(a_attempts)};
+    CheckGuess(userChoice,a_PROGRAM_GUESS);
+    Game(a_attempts - 1, a_PROGRAM_GUESS);
+    return 0;
+}
+
+int main()
+{
+    const int MAX_NUMBER = 100;
+    const int ATTEMPTS_NUMBERS{7};
+    const int programGuess{GetProgramNum(MAX_NUMBER)};
+    
+    std::cout << "Try to find a number between 1-100\n";
+    Game(ATTEMPTS_NUMBERS, programGuess);
+    
+    std::cout << "You Lose :( the number was: " << programGuess;
+    return 0;
+}
