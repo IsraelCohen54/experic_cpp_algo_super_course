@@ -1,4 +1,4 @@
-/*
+/* HW2
 Write a tic tac toe program for two playes. One is X and one is O.
 Use struct to group variables/values you need to send together to functions.
 You can initialize structs the regular way - using { } (called initialization-list)
