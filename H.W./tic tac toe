@@ -1,0 +1,225 @@
+/*
+Write a tic tac toe program for two playes. One is X and one is O.
+Use struct to group variables/values you need to send together to functions.
+You can initialize structs the regular way - using { } (called initialization-list)
+
+The attached file demonstrates struct and defining global/file namespace constants.
+
+Sample game:
+> You are playing X
+> Select horizontal position (1-3): 2
+> Select vertical position (1-3): 2
+___
+_x_
+___
+> You are playing O
+> Select horizontal position (1-3): 3
+> Select vertical position (1-3): 1
+__o
+_x_
+___
+> You are playing X
+> Select horizontal position (1-3): 1
+> Select vertical position (1-3): 3
+__o
+_x_
+x__
+.........
+*/
+
+#include <iostream>
+#include <string>
+#include <random>
+
+static const int NO_WINNER = -1;
+static const int X_PLAYER = 1;
+static const int ZERO_PLAYER = 0;
+static const int MAX_NUM = 2;
+
+enum class ROW
+{
+	ROW_1,
+	ROW_2,
+	ROW_3,
+};
+
+enum class COLUMN
+{
+	COLUMN_1,
+	COLUMN_2,
+	COLUMN_3,
+};
+
+struct Point
+{
+	int m_row;
+	int m_column;
+};
+
+struct GameBoard
+{
+	std::string m_row0col0{"_"}; // _ = vacant cell
+	std::string m_row0col1{"_"}; 
+	std::string m_row0col2{"_"}; 
+	std::string m_row1col0{"_"};
+	std::string m_row1col1{"_"};
+	std::string m_row1col2{"_"};
+	std::string m_row2col0{"_"};
+	std::string m_row2col1{"_"};
+	std::string m_row2col2{"_"};
+};
+
+int AskUserForCoordinate(const std::string& a_fieldName)
+{
+	std::string userCoord{};
+	std::cout << "choose grid, choose " << a_fieldName << " (1-3) = ";
+	std::getline(std::cin, userCoord);
+	return std::stoi(userCoord);
+}
+
+Point AskUserForPoint()
+{
+	int row = AskUserForCoordinate("row");
+	int column = AskUserForCoordinate("col");
+	Point newPoint{row, column}; 
+	return newPoint;
+}
+
+int ChooseXOrYAtStart() {
+	std::random_device startLetter{};
+	int whoIsStarting_X_0 = (startLetter() % MAX_NUM) + 1;
+	if (whoIsStarting_X_0 == X_PLAYER)
+	{ 
+		std::cout << "Starting letter is: X\n";
+		return 9; // some high enough (>=9) odd number for player X turn after modulu
+	}
+	else 
+	{
+		std::cout << "Starting letter is: 0\n";
+		return 10; // some high enough (>=9) even number for player '0' turn after modulu
+	}
+	return whoIsStarting_X_0;
+}
+
+void PrintBourd(GameBoard a_gb)
+{
+	std::cout << a_gb.m_row0col0 << a_gb.m_row0col1 << a_gb.m_row0col2 << "\n";
+	std::cout << a_gb.m_row1col0 << a_gb.m_row1col1 << a_gb.m_row1col2 << "\n";
+	std::cout << a_gb.m_row2col0 << a_gb.m_row2col1 << a_gb.m_row2col2 << "\n\n";
+}
+
+GameBoard FillGridByUserChoice(Point const a_usrChoice, GameBoard a_GB, const int a_turnSwitcher)
+{
+	std::string cellFilledByX_0 = (a_turnSwitcher % MAX_NUM  == X_PLAYER) ? "X" : "0"; // Odd => player X turn, Even => player '0' turn
+	if (a_usrChoice.m_row == (int)ROW::ROW_1)
+	{
+		if (a_usrChoice.m_column == (int)COLUMN::COLUMN_1)
+		{
+			a_GB.m_row0col0 = cellFilledByX_0;
+		}
+		else if (a_usrChoice.m_column == (int)COLUMN::COLUMN_2)
+		{
+			a_GB.m_row0col1 = cellFilledByX_0;
+		}
+		else if (a_usrChoice.m_column == (int)COLUMN::COLUMN_3)
+		{
+			a_GB.m_row0col2 = cellFilledByX_0;
+		}
+	}
+	if (a_usrChoice.m_row == (int)ROW::ROW_2)
+	{
+		if (a_usrChoice.m_column == (int)COLUMN::COLUMN_1)
+		{
+			a_GB.m_row1col0 = cellFilledByX_0;
+		}
+		else if (a_usrChoice.m_column == (int)COLUMN::COLUMN_2)
+		{
+			a_GB.m_row1col1 = cellFilledByX_0;
+		}
+		else if (a_usrChoice.m_column == (int)COLUMN::COLUMN_3)
+		{
+			a_GB.m_row1col2 = cellFilledByX_0;
+		}
+	}
+	if (a_usrChoice.m_row == (int)ROW::ROW_3)
+	{
+		if (a_usrChoice.m_column == (int)COLUMN::COLUMN_1)
+		{
+			a_GB.m_row2col0 = cellFilledByX_0;
+		}
+		else if (a_usrChoice.m_column == (int)COLUMN::COLUMN_2)
+		{
+			a_GB.m_row2col1 = cellFilledByX_0;
+		}
+		else if (a_usrChoice.m_column == (int)COLUMN::COLUMN_3)
+		{
+			a_GB.m_row2col2 = cellFilledByX_0;
+		}
+	}
+	return a_GB;
+}
+
+int CheckForWinner(GameBoard gameBoard)
+{
+	if (gameBoard.m_row0col0 == gameBoard.m_row0col1 && gameBoard.m_row0col1 == gameBoard.m_row0col2 && gameBoard.m_row0col2 != "_")
+	{
+		return (gameBoard.m_row0col0 == "0") ? ZERO_PLAYER : X_PLAYER; // =0 => zero player won, else 'X' player won
+	}
+	if (gameBoard.m_row1col0 == gameBoard.m_row1col1 && gameBoard.m_row1col1 == gameBoard.m_row1col2 && gameBoard.m_row1col2 != "_")
+	{
+		return (gameBoard.m_row1col0 == "0") ? ZERO_PLAYER : X_PLAYER;
+	}
+	if (gameBoard.m_row2col0 == gameBoard.m_row2col1 && gameBoard.m_row2col1 == gameBoard.m_row2col2 && gameBoard.m_row2col2 != "_")
+	{
+		return (gameBoard.m_row2col0 == "0") ? ZERO_PLAYER : X_PLAYER;
+	}
+	if (gameBoard.m_row0col0 == gameBoard.m_row1col0 && gameBoard.m_row1col0 == gameBoard.m_row2col0 && gameBoard.m_row2col0 != "_")
+	{
+		return (gameBoard.m_row0col0 == "0") ? ZERO_PLAYER : X_PLAYER;
+	}
+	if (gameBoard.m_row0col1 == gameBoard.m_row1col1 && gameBoard.m_row1col1 == gameBoard.m_row2col1 && gameBoard.m_row2col1 != "_")
+	{
+		return (gameBoard.m_row0col1 == "0") ? ZERO_PLAYER : X_PLAYER;
+	}
+	if (gameBoard.m_row0col2 == gameBoard.m_row1col2 && gameBoard.m_row1col2 == gameBoard.m_row2col2 && gameBoard.m_row2col2 != "_")
+	{
+		return (gameBoard.m_row0col2 == "0") ? ZERO_PLAYER : X_PLAYER;
+	}
+	if (gameBoard.m_row0col0 == gameBoard.m_row1col1 && gameBoard.m_row1col1 == gameBoard.m_row2col2 && gameBoard.m_row2col2 != "_")
+	{
+		return (gameBoard.m_row0col0 == "0") ? ZERO_PLAYER : X_PLAYER;
+	}
+	if (gameBoard.m_row2col0 == gameBoard.m_row1col1 && gameBoard.m_row1col1 == gameBoard.m_row0col2 && gameBoard.m_row0col2 != "_")
+	{
+		return (gameBoard.m_row2col0 == "0") ? ZERO_PLAYER : X_PLAYER;
+	}
+	return NO_WINNER;
+}
+
+int main()
+{
+    std::cout << "Are you ready for a tic tac toe game? it doesnt matter, try to win!!! :)\n";
+
+	int turnSwitcher = ChooseXOrYAtStart(); //choosing a high (>=9) odd\even number to choose who would start the game
+
+	GameBoard gameBoard{};
+	for (int attempts: {1,2,3,4,5,6,7,8,9})
+	{
+		Point usrChoice = AskUserForPoint();
+		gameBoard = FillGridByUserChoice(usrChoice, gameBoard, turnSwitcher);
+		turnSwitcher = turnSwitcher - 1;
+		PrintBourd(gameBoard);
+		int checkForWinner{CheckForWinner(gameBoard)};
+		if (checkForWinner == X_PLAYER)
+		{
+		std::cout << "X player won!\n";
+		break;
+		}
+		else if (checkForWinner == ZERO_PLAYER)
+		{
+		std::cout<< "'0' player won!\n";
+		break;
+		}
+	}
+	return 0;
+}
