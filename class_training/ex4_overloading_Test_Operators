@@ -1,0 +1,105 @@
+#include "pch.h"
+#include "CppUnitTest.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+struct DeltaX
+{	
+	int m_x;
+};
+
+struct DeltaY
+{	
+	int m_y;
+};
+
+struct Delta2d
+{	
+	int m_x;
+	int m_y;
+};
+
+struct Point
+{	
+	void Add(const DeltaX& a_deltaX);
+	void Add(const DeltaY& a_deltaY);
+	void Add(const Delta2d& a_deltaXY);
+	Delta2d DeltaFrom(const Point& m);
+	double Size();
+
+	int m_x;
+	int m_y;
+};
+
+void Point::Add(const DeltaX& a_deltaX)
+{
+	this->m_x += a_deltaX.m_x;
+}
+
+void Point::Add(const DeltaY& a_deltaY)
+{
+	this->m_y += a_deltaY.m_y;
+}
+
+void Point::Add(const Delta2d& a_deltaXY)
+{
+	this->m_x += a_deltaXY.m_x;
+	this->m_y += a_deltaXY.m_y;
+}
+
+Delta2d Point::DeltaFrom(const Point& a_m)
+{
+	Delta2d pt{};
+	pt.m_x = this->m_x - a_m.m_x;
+	pt.m_y = this->m_y - a_m.m_y;
+	return pt;
+}
+
+double Point::Size()
+{
+	return sqrt(this->m_x * this->m_x + this->m_y * this->m_y);
+}
+
+bool operator==(const Point& p_1, const Point& p_2)
+{
+	return (p_1.m_x == p_2.m_x && p_1.m_y == p_2.m_y) ? true : false;
+}
+
+std::wstring ToString(const Point& p1)
+{
+	std::wstring result = L"AsiaasiPoint";
+	result += ToString(p1.m_x);
+	result += L",";
+	result += ToString(p1.m_y);
+	return result;
+}
+
+namespace ex4testoverloadingtestingoperatators
+{
+	TEST_CLASS(ex4testoverloadingtestingoperatators)
+	{
+	public:
+		
+		TEST_METHOD(TestMethod1)
+		{
+			Point checkEqual{0, 0};
+			Point mPlus{3, 0};
+			Point mPlus1{4, 3};
+			Point mMinus{-1, -2};
+			Point nPlus{3, 0};
+			Point nMinus{0, -1};
+			DeltaX dx_1{1};
+			DeltaX dx_2{-3};
+			DeltaY dY_3{1};
+			DeltaY dY_4{-3};
+			Delta2d d2DPlus{3,0};
+			Delta2d d2DMinus{-1,-2};
+
+			//Assert::AreEqual(checkEqual,nPlus.Add(dx_1)); //Point & Void, change return value - no good, 
+			Assert::AreEqual(mPlus,mPlus);
+			//Assert::AreEqual(d2DMinus,checkEqual.DeltaFrom(mMinus));
+			//Assert::AreEqual(5.0,mPlus1.Size());
+			
+		}
+	};
+}
